@@ -303,14 +303,14 @@
 
   // ---------- strike + restore: the page goes greyscale, then comes back ----------
   const act     = document.getElementById('act');
-  const restore = document.querySelector('.feature');
+  const restore = document.querySelector('.band.mood');
   const flash   = document.querySelector('.jw-flash');
   const bolt    = document.querySelector('.jw-bolt');
   const status  = document.querySelector('.status-text');
   if (!act || !restore || !flash || !bolt || !status) return;
 
   const BROODING = 'Unit 001 · Brooding';
-  const TRIPPED  = 'Unit 001 · Tripped · Island mode';
+  const TRIPPED  = 'Unit 001 · Tripped';
 
   let fired = false;
   const strikeObs = new IntersectionObserver(function(entries) {
@@ -335,7 +335,7 @@
         restoreObs.disconnect();
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.4 });
   restoreObs.observe(restore);
 
   function runStrike() {

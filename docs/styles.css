@@ -127,15 +127,19 @@ h2.headline {
   align-items: center;
   gap: 8px;
 }
+/* Status indicator: led colour and text track the device state.
+   Brooding = blue (waiting, calm). Tripped = amber (active, alert).
+   The text colour follows the led so they read as one signal. */
 .topbar .status-text {
-  transition: color 300ms ease;
+  color: var(--accent-2);
+  transition: color 500ms ease;
 }
 .topbar .status .dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+  background: var(--accent-2);
+  box-shadow: 0 0 10px var(--accent-2);
   animation: pulse 2.6s ease-in-out infinite;
-  transition: box-shadow 400ms ease;
+  transition: background-color 500ms ease, box-shadow 500ms ease;
 }
 @keyframes pulse {
   0%, 100% { opacity: 1; }
@@ -463,6 +467,7 @@ body.tripped .topbar .status-text {
   color: var(--accent);
 }
 body.tripped .topbar .status .dot {
+  background: var(--accent);
   box-shadow: 0 0 16px var(--accent), 0 0 4px var(--accent);
 }
 
