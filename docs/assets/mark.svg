@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="jigawatt mark">
+  <title>jigawatt</title>
+  <desc>A lightning bolt with a deliberate break — the mark is the device's behaviour: an opened circuit.</desc>
+  <g fill="#ffb000">
+    <path d="M15 2 L4 12 L11 12 Z"/>
+    <path d="M13 14 L20 14 L9 22 Z"/>
+  </g>
+</svg>

@@ -34,16 +34,16 @@ It does not pretend to be lightning protection. It is a fast, dumb switch with a
 
 Three diagrams, in increasing order of "this is where the wires actually go."
 
-![System overview](docs/assets/diag_overview.png)
+![System overview](docs/reference/diag_overview.png)
 *System overview — sensor, controller, MQTT, and the contactor in their natural habitat.*
 
-![DIY control board](docs/assets/diag_diy3.png)
+![DIY control board](docs/reference/diag_diy3.png)
 *Control board — ESP32, AS3935 on SPI, PC817 optocoupler isolating an ESP32 GPIO from a BD139 that drives the contactor coil.*
 
-![Mains side](docs/assets/diag_mains2.png)
+![Mains side](docs/reference/diag_mains2.png)
 *Mains side — 4-pole 40A AC contactor between the incoming supply and the household distribution board, with the UPS feeding the low-voltage side independently.*
 
-> A static project site lives in [`docs/`](docs/index.html) — built for GitHub Pages, treats unit 001 like a launch.
+> The public site is at **[jigawatt.starstucklab.com](https://jigawatt.starstucklab.com)** — it's the marketing version, treating unit 001 like a launch. This README is the engineering version.
 
 The ESP32 keeps the contactor coil energised in normal operation. A detected strike de-energises the coil; the contactor falls open under its own spring. Failure of the controller, the optocoupler, or the supply to the coil therefore also opens the contactor. This is deliberate.
 
