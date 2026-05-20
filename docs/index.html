@@ -41,7 +41,7 @@
       <span class="sep">/</span>
       <span>Lower Himalayas</span>
       <span class="sep">/</span>
-      <span>Monsoon, 2025</span>
+      <span>Monsoon, 2026</span>
     </div>
     <h1>jigawatt<span class="tail">.</span></h1>
     <p class="hero-sub">The first one, on purpose.</p>
@@ -52,7 +52,7 @@
 
 
 <!-- ============ THE ACT ============ -->
-<section class="text">
+<section class="text" id="act">
   <div class="wrap">
     <div class="cols-two">
       <div>
@@ -91,6 +91,45 @@
 </section>
 
 
+<!-- ============ TIMELINE / HOW IT WORKS ============ -->
+<section class="timeline-section">
+  <div class="wrap">
+    <span class="kicker">How it works</span>
+    <h2 class="headline">Four moves, in order.</h2>
+
+    <div class="timeline" aria-label="How jigawatt works, in four steps">
+      <div class="timeline-track" aria-hidden="true"></div>
+      <ol class="timeline-steps">
+        <li class="timeline-step">
+          <span class="num">01</span>
+          <span class="dot" aria-hidden="true"></span>
+          <h3>Strike</h3>
+          <p>A discharge somewhere inside ten kilometres. The sensor sees it before the thunder does.</p>
+        </li>
+        <li class="timeline-step">
+          <span class="num">02</span>
+          <span class="dot" aria-hidden="true"></span>
+          <h3>Decide</h3>
+          <p>Classified, distance estimated, threshold cleared. The controller agrees with itself.</p>
+        </li>
+        <li class="timeline-step">
+          <span class="num">03</span>
+          <span class="dot" aria-hidden="true"></span>
+          <h3>Open</h3>
+          <p>Coil drops. The contactor falls under its own spring. The house becomes an island.</p>
+        </li>
+        <li class="timeline-step">
+          <span class="num">04</span>
+          <span class="dot" aria-hidden="true"></span>
+          <h3>Wait</h3>
+          <p>Five-minute cool-off, reset by any new strike. Then the door closes. The house re-joins.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+
 <!-- ============ THE UNIT ============ -->
 <section class="feature">
   <div class="wrap">
@@ -103,7 +142,8 @@
         <h2 class="headline">One was made. It lives in a wall.</h2>
         <div class="prose">
           <p>
-            Hand-built in May 2025. Single deployment. A matte-black enclosure
+            Hand-built in May 2026, just ahead of the summer monsoon. Single
+            deployment. A matte-black enclosure
             roughly the size of a paperback, with two amber LEDs that read,
             depending on the light, as indicators or as eyes.
           </p>
@@ -233,6 +273,86 @@
     </div>
   </div>
 </footer>
+
+
+<!-- ============ STRIKE EFFECT OVERLAY ============ -->
+<div class="jw-flash" aria-hidden="true"></div>
+<svg class="jw-bolt" viewBox="0 0 200 400" aria-hidden="true">
+  <path d="M 112 0 L 70 130 L 118 138 L 58 280 L 132 200 L 96 218 L 130 400"/>
+  <path d="M 96 218 L 48 332"/>
+  <path d="M 58 280 L 28 350"/>
+</svg>
+<div class="jw-badge" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+(function() {
+  'use strict';
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- timeline: light up sequentially when in view ----------
+  const tlObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        tlObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.timeline').forEach(function(el) { tlObs.observe(el); });
+
+  if (reduced) return;
+
+  // ---------- strike effect on first reveal of "the act" ----------
+  const act = document.getElementById('act');
+  if (!act) return;
+
+  const flash = document.querySelector('.jw-flash');
+  const bolt  = document.querySelector('.jw-bolt');
+  const badge = document.querySelector('.jw-badge');
+  if (!flash || !bolt || !badge) return;
+
+  let fired = false;
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !fired) {
+        fired = true;
+        runStrike();
+        obs.disconnect();
+      }
+    });
+  }, { threshold: 0.35 });
+  obs.observe(act);
+
+  function runStrike() {
+    // t=0: flash + bolt + shake
+    document.body.classList.add('jw-shake');
+    flash.classList.add('on');
+    bolt.classList.add('on');
+
+    // t≈120ms: flash starts to clear; bolt holds a beat longer
+    setTimeout(function() { flash.classList.remove('on'); }, 130);
+
+    // t≈300ms: bolt fades, badge appears as TRIPPED
+    setTimeout(function() {
+      bolt.classList.remove('on');
+      badge.textContent = 'Tripped · island mode';
+      badge.classList.add('on', 'tripped');
+    }, 320);
+
+    // t≈420ms: stop shake
+    setTimeout(function() { document.body.classList.remove('jw-shake'); }, 420);
+
+    // t≈1500ms: badge transitions to ARMED
+    setTimeout(function() {
+      badge.textContent = 'Armed';
+      badge.classList.remove('tripped');
+    }, 1500);
+
+    // t≈3200ms: fade badge away
+    setTimeout(function() { badge.classList.remove('on'); }, 3200);
+  }
+})();
+</script>
 
 </body>
 </html>

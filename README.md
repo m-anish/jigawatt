@@ -68,7 +68,7 @@ The ESP32 keeps the contactor coil energised in normal operation. A detected str
 | Perfboard / custom PCB | 1 | 250 |
 | **Total** |  | **~5,480** |
 
-Costs are indicative, sourced locally in India in 2025, and exclude what you will inevitably break.
+Costs are indicative, sourced locally in India in May 2026, and exclude what you will inevitably break.
 
 ---
 
