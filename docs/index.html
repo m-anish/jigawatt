@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jigawatt — unit 001</title>
+  <meta name="description" content="A small machine that listens for lightning and opens the mains contactor before the storm finishes its sentence. The first jigawatt, made on purpose. A starstuck lab project." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" />
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="brand"><span class="bolt">⚡</span> jigawatt</a>
+    <nav>
+      <a href="#premise">Premise</a>
+      <a href="#anatomy">Anatomy</a>
+      <a href="#specs">Specs</a>
+      <a href="#bom">Hardware</a>
+      <a href="#wiring">Wiring</a>
+      <a href="#build">Build</a>
+      <a href="#caveats">Caveats</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      <span>Unit 001</span>
+      <span class="sep">/</span>
+      <span>Prototype</span>
+      <span class="sep">/</span>
+      <span>Monsoon 2025, India</span>
+      <span class="sep">/</span>
+      <span>Status: brooding</span>
+    </div>
+
+    <h1>jigawatt<span class="tail">.</span></h1>
+
+    <p class="hero-sub">The first one, on purpose.</p>
+
+    <p class="hero-body">
+      A small box that listens for lightning and opens the mains contactor
+      before the storm finishes its sentence. Built in a workshop, deployed
+      under a monsoon, named after a famous mispronunciation. It is not
+      lightning protection. It is a fast, dumb switch with an opinion about
+      timing.
+    </p>
+
+    <div class="spec-strip" aria-label="Headline specs">
+      <div class="cell">
+        <div class="k">Detection radius</div>
+        <div class="v">≤ 10<span class="unit">km</span></div>
+      </div>
+      <div class="cell">
+        <div class="k">Trip latency</div>
+        <div class="v">&lt; 40<span class="unit">ms</span></div>
+      </div>
+      <div class="cell">
+        <div class="k">Switching</div>
+        <div class="v">40A · 4P<span class="unit">/ 230V</span></div>
+      </div>
+      <div class="cell">
+        <div class="k">Telemetry</div>
+        <div class="v">MQTT · HA</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ PREMISE ============ -->
+  <section id="premise">
+    <div class="section-head">
+      <span class="section-num">01 / Premise</span>
+      <h2 class="section-title">Surge protectors are insurance. This is a closed door.</h2>
+      <span class="section-kicker">Why it exists</span>
+    </div>
+
+    <div class="cols prose">
+      <div>
+        <p class="lead">
+          In an Indian monsoon, the grid is a long copper antenna feeding
+          appliances that were not consulted about the weather. MOV-based
+          surge protectors absorb what they can and then quietly cook
+          themselves. They are useful. They are not enough.
+        </p>
+        <p>
+          The premise here is older than electronics: when the storm gets
+          close, open the door. A 4-pole 40-amp AC contactor severs every
+          conductor running into the house — both live phases <em>and</em>
+          neutral — leaving a physical air gap between the grid and
+          everything inside.
+        </p>
+      </div>
+      <div>
+        <p>
+          The decision to open is made by an AS3935 franklin sensor watching
+          for the broadband RF signature of a lightning discharge. The
+          decision to re-engage is made by a clock: a configurable cool-off
+          window after the last qualifying strike.
+        </p>
+        <p>
+          The system is engineered to fail open. If the controller dies, if
+          the supply to the coil fails, if the optocoupler turns into glass —
+          the contactor falls open under its own spring. The safe state is
+          disconnected. That is deliberate.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ TRIP SEQUENCE ============ -->
+  <section id="sequence">
+    <div class="section-head">
+      <span class="section-num">02 / Sequence</span>
+      <h2 class="section-title">What happens, in order.</h2>
+      <span class="section-kicker">≈ 40 ms, end to end</span>
+    </div>
+
+    <p class="lead">
+      A discharge within range; an interrupt on a GPIO; a coil drops; a
+      contactor falls. The house, briefly, is its own island.
+    </p>
+
+    <div class="sequence">
+      <div class="step">
+        <div class="t">t = 0 ms</div>
+        <div class="e">AS3935 detects a discharge. IRQ line goes high.</div>
+      </div>
+      <div class="step">
+        <div class="t">+1 ms</div>
+        <div class="e">ESP32 reads the interrupt register, classifies the event, extracts distance.</div>
+      </div>
+      <div class="step">
+        <div class="t">+2 ms</div>
+        <div class="e">If within the configured radius: coil-drive GPIO is pulled low.</div>
+      </div>
+      <div class="step">
+        <div class="t">+25 ms</div>
+        <div class="e">Contactor mechanism drops out. Live and neutral are physically separated.</div>
+      </div>
+      <div class="step">
+        <div class="t">+40 ms</div>
+        <div class="e">MQTT publishes <code>state=tripped</code>. Cool-off timer begins.</div>
+      </div>
+    </div>
+
+    <p class="dim" style="margin-top:18px;font-size:13px;">
+      Timings are typical for the AX-style 40A contactor used in unit 001.
+      Slower contactors exist; faster ones cost more than the rest of the
+      build combined.
+    </p>
+  </section>
+
+
+  <!-- ============ ANATOMY (DIAGRAMS) ============ -->
+  <section id="anatomy">
+    <div class="section-head">
+      <span class="section-num">03 / Anatomy</span>
+      <h2 class="section-title">Three diagrams, increasing in honesty.</h2>
+      <span class="section-kicker">As-built, unit 001</span>
+    </div>
+
+    <figure>
+      <img src="assets/diag_overview.png" alt="System overview diagram: sensor, ESP32, MQTT broker, Home Assistant, and the contactor." />
+      <figcaption><span class="num">FIG 01 —</span> System overview. Sensor, controller, broker, dashboard, and the contactor in their natural habitat. Grid on the left, house on the right, the box in the middle making one decision repeatedly.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="assets/diag_diy3.png" alt="Control board schematic: ESP32, AS3935 on SPI, PC817 optocoupler, BD139 transistor driving the contactor coil." />
+      <figcaption><span class="num">FIG 02 —</span> Control board. ESP32 talks to the AS3935 over SPI. A PC817 isolates the low-voltage logic from a BD139 that switches the contactor coil. A flyback diode keeps the transistor from arguing with the coil's inductance.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="assets/diag_mains2.png" alt="Mains-side wiring diagram showing 4-pole contactor between incoming supply and household distribution board." />
+      <figcaption><span class="num">FIG 03 —</span> Mains side. A 4-pole 40A AC contactor sits between the incoming supply and the household distribution board. The UPS feeds the low-voltage side independently, so the controller survives the disconnect it just caused.</figcaption>
+    </figure>
+  </section>
+
+
+  <!-- ============ SPECS ============ -->
+  <section id="specs">
+    <div class="section-head">
+      <span class="section-num">04 / Specifications</span>
+      <h2 class="section-title">Numbers, with their units.</h2>
+      <span class="section-kicker">Unit 001 / as deployed</span>
+    </div>
+
+    <div class="grid cols-4">
+      <div class="card">
+        <div class="label">Sensor</div>
+        <div class="big">AS3935</div>
+        <div class="small">Franklin lightning detector, SPI interface, 500 kHz antenna, in-cloud and CG detection.</div>
+      </div>
+      <div class="card">
+        <div class="label">Controller</div>
+        <div class="big">ESP32</div>
+        <div class="small">Dual-core LX6, Wi-Fi 2.4 GHz, deep-sleep capable. Runs Arduino-framework firmware.</div>
+      </div>
+      <div class="card">
+        <div class="label">Detection range</div>
+        <div class="big">1–40<span class="u">km</span></div>
+        <div class="small">Trip threshold configurable. Default 10 km, conservative for typical site noise.</div>
+      </div>
+      <div class="card">
+        <div class="label">Switching</div>
+        <div class="big">40<span class="u">A</span></div>
+        <div class="small">4-pole AC contactor, 230 V coil, opens both phases and neutral. Fail-open.</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Logic supply</div>
+        <div class="big">5<span class="u">V</span></div>
+        <div class="small">Isolated AC-DC module (Hi-Link-class), UPS-buffered with 2× 18650 Li-ion.</div>
+      </div>
+      <div class="card">
+        <div class="label">Hold-up</div>
+        <div class="big">≈ 6<span class="u">h</span></div>
+        <div class="small">Idle telemetry. Long enough to ride out the storm and the post-storm outage.</div>
+      </div>
+      <div class="card">
+        <div class="label">Transport</div>
+        <div class="big">MQTT</div>
+        <div class="small">TLS optional. Last-will published as <code>offline</code>. Discovery for Home Assistant.</div>
+      </div>
+      <div class="card">
+        <div class="label">Cool-off</div>
+        <div class="big">300<span class="u">s</span></div>
+        <div class="small">Default. Reset by any new qualifying strike. Configurable per site.</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <div class="label">Note</div>
+      Numbers above describe unit 001 as deployed in May 2025 at a single
+      site in northern India. Performance under different antennas, supply
+      transients, and RF environments will vary. This is a prototype.
+    </div>
+  </section>
+
+
+  <!-- ============ TELEMETRY ============ -->
+  <section id="telemetry">
+    <div class="section-head">
+      <span class="section-num">05 / Telemetry</span>
+      <h2 class="section-title">The box publishes; the dashboard listens.</h2>
+      <span class="section-kicker">MQTT · Home Assistant</span>
+    </div>
+
+    <p class="lead">
+      Everything observable from outside the enclosure is on MQTT.
+      Home Assistant discovery is enabled, so the device appears with a
+      full set of entities the moment the broker sees the LWT go online.
+    </p>
+
+    <h3 style="margin-top:36px;">Published topics</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Topic</th><th>Payload</th><th>Retained</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">jigawatt/state</td><td>armed · tripped · cooling · fault</td><td class="mono">yes</td></tr>
+          <tr><td class="mono">jigawatt/strike</td><td class="mono">{distance_km, energy, ts}</td><td class="mono">no</td></tr>
+          <tr><td class="mono">jigawatt/strike_count</td><td>integer, since boot</td><td class="mono">yes</td></tr>
+          <tr><td class="mono">jigawatt/contactor</td><td>closed · open</td><td class="mono">yes</td></tr>
+          <tr><td class="mono">jigawatt/battery_v</td><td>float (volts)</td><td class="mono">yes</td></tr>
+          <tr><td class="mono">jigawatt/rssi</td><td>integer (dBm)</td><td class="mono">yes</td></tr>
+          <tr><td class="mono">jigawatt/availability</td><td>online · offline (LWT)</td><td class="mono">yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:36px;">Subscribed commands</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Topic</th><th>Payload</th><th>Effect</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">jigawatt/cmd/arm</td><td class="mono">1</td><td>Force re-engage after a trip.</td></tr>
+          <tr><td class="mono">jigawatt/cmd/test</td><td class="mono">1</td><td>Simulate a strike for testing.</td></tr>
+          <tr><td class="mono">jigawatt/cmd/reboot</td><td class="mono">1</td><td>Reboot the ESP32.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ============ BOM ============ -->
+  <section id="bom">
+    <div class="section-head">
+      <span class="section-num">06 / Bill of materials</span>
+      <h2 class="section-title">Everything in the box, in rupees.</h2>
+      <span class="section-kicker">Sourced locally, 2025</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Item</th><th class="num">Qty</th><th class="num">Cost (INR)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AS3935 lightning sensor module (SPI)</td><td class="num">1</td><td class="num">850</td></tr>
+          <tr><td>ESP32 DevKit v1</td><td class="num">1</td><td class="num">450</td></tr>
+          <tr><td>4-pole 40A AC contactor (230V coil)</td><td class="num">1</td><td class="num">1,100</td></tr>
+          <tr><td>PC817 optocoupler</td><td class="num">1</td><td class="num">10</td></tr>
+          <tr><td>BD139 NPN transistor</td><td class="num">1</td><td class="num">15</td></tr>
+          <tr><td>1N4007 flyback diode</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Resistors, capacitors, headers</td><td class="num">—</td><td class="num">100</td></tr>
+          <tr><td>Li-ion UPS board (5V, 18650-based)</td><td class="num">1</td><td class="num">750</td></tr>
+          <tr><td>18650 Li-ion cell, 3000 mAh</td><td class="num">2</td><td class="num">500</td></tr>
+          <tr><td>5V / 230V isolated AC-DC module</td><td class="num">1</td><td class="num">350</td></tr>
+          <tr><td>IP65 polycarbonate enclosure</td><td class="num">1</td><td class="num">700</td></tr>
+          <tr><td>DIN rail terminals, ferrules, lugs, wire</td><td class="num">—</td><td class="num">400</td></tr>
+          <tr><td>Perfboard / custom PCB</td><td class="num">1</td><td class="num">250</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>Total</td><td class="num">—</td><td class="num">≈ 5,480</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <p class="dim" style="margin-top:16px;font-size:13px;">
+      Indicative pricing. Excludes mistakes, lost screws, and the second
+      AS3935 you buy after the first one disappears into a drawer.
+    </p>
+  </section>
+
+
+  <!-- ============ WIRING ============ -->
+  <section id="wiring">
+    <div class="section-head">
+      <span class="section-num">07 / Wiring</span>
+      <h2 class="section-title">Pins, with intent.</h2>
+      <span class="section-kicker">AS3935 ↔ ESP32 ↔ contactor</span>
+    </div>
+
+    <h3>AS3935 — SPI</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>AS3935 pin</th><th>ESP32 GPIO</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">VCC</td><td class="mono">3V3</td><td>Do not feed this from 5 V.</td></tr>
+          <tr><td class="mono">GND</td><td class="mono">GND</td><td>Common with logic ground.</td></tr>
+          <tr><td class="mono">SCK</td><td class="mono">GPIO 18</td><td>SPI clock (VSPI default).</td></tr>
+          <tr><td class="mono">MISO</td><td class="mono">GPIO 19</td><td>SPI MISO.</td></tr>
+          <tr><td class="mono">MOSI</td><td class="mono">GPIO 23</td><td>SPI MOSI.</td></tr>
+          <tr><td class="mono">CS</td><td class="mono">GPIO 5</td><td>Active low.</td></tr>
+          <tr><td class="mono">IRQ</td><td class="mono">GPIO 4</td><td>Interrupt on strike / noise / disturber.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:36px;">Contactor coil driver</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Signal</th><th>ESP32 GPIO</th><th>Path</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">Coil drive</td>
+            <td class="mono">GPIO 16</td>
+            <td>GPIO → 1 kΩ → PC817 LED → opto transistor → BD139 base → coil. 1N4007 across coil. Coil supply isolated from ESP32 rail.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:36px;">Status / control</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Signal</th><th>ESP32 GPIO</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">Heartbeat LED</td><td class="mono">GPIO 2</td><td>Onboard LED. Blinks once per second when armed.</td></tr>
+          <tr><td class="mono">Reset</td><td class="mono">EN</td><td>External momentary button.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="label">Safety</div>
+      The mains side is mains. Use proper enclosures, fused supplies, MCBs
+      upstream of the contactor, and an isolated earth. If this paragraph
+      reads as advice rather than instruction, do not build this yet.
+    </div>
+  </section>
+
+
+  <!-- ============ BUILD ============ -->
+  <section id="build">
+    <div class="section-head">
+      <span class="section-num">08 / Getting started</span>
+      <h2 class="section-title">Flash it. Point it at a broker. Wait for weather.</h2>
+      <span class="section-kicker">PlatformIO · MQTT · HA</span>
+    </div>
+
+    <h3>Firmware</h3>
+    <p>
+      PlatformIO with the Arduino-ESP32 framework. From the repo root:
+    </p>
+<pre><span class="c"># clone and enter the firmware dir</span>
+<span class="k">cd</span> firmware
+<span class="k">cp</span> config.example.h config.h         <span class="c"># set Wi-Fi, MQTT, thresholds</span>
+pio run -t upload                     <span class="c"># flash the ESP32</span>
+pio device monitor                    <span class="c"># watch it boot</span></pre>
+
+    <h3>Key settings</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Setting</th><th>Default</th><th>Effect</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">STRIKE_DISTANCE_KM</td><td class="mono">10</td><td>Trip when a strike is detected within this radius.</td></tr>
+          <tr><td class="mono">COOL_OFF_SECONDS</td><td class="mono">300</td><td>Hold the disconnect for this long after the last qualifying strike.</td></tr>
+          <tr><td class="mono">INDOOR_MODE</td><td class="mono">true</td><td>Adjusts AS3935 gain for enclosures with nearby metal or electronics.</td></tr>
+          <tr><td class="mono">NOISE_FLOOR</td><td class="mono">2</td><td>Higher rejects more, detects less.</td></tr>
+          <tr><td class="mono">WATCHDOG_THRESHOLD</td><td class="mono">2</td><td>Disturber rejection sensitivity.</td></tr>
+          <tr><td class="mono">SPIKE_REJECTION</td><td class="mono">2</td><td>Filters out short non-lightning RF events.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:36px;">Home Assistant</h3>
+    <p>
+      With MQTT discovery enabled and the broker configured, the device
+      shows up under <strong>Settings → Devices &amp; Services → MQTT</strong>
+      as <code>jigawatt</code>, exposing entities for state, last strike
+      distance, strike count, contactor position, battery voltage, and RSSI,
+      plus buttons for <em>arm</em>, <em>test</em>, and <em>reboot</em>. A
+      reference dashboard card and a sample automation
+      (notify on first strike within 20 km, log every trip) live in
+      <code>docs/home_assistant/</code>.
+    </p>
+  </section>
+
+
+  <!-- ============ CAVEATS ============ -->
+  <section id="caveats">
+    <div class="section-head">
+      <span class="section-num">09 / Caveats</span>
+      <h2 class="section-title">What this isn't.</h2>
+      <span class="section-kicker">Read this part twice</span>
+    </div>
+
+    <ul class="caveats">
+      <li>
+        <div class="head">Not lightning protection</div>
+        <div class="body">A direct strike on the building does not care about an air gap inside the meter cabinet. This system reduces exposure to <em>conducted</em> transients arriving via the grid. For strike protection, you want a properly installed earthing system and SPDs. Use both.</div>
+      </li>
+      <li>
+        <div class="head">Not certified</div>
+        <div class="body">No agency has tested this. No insurer recognises it. It is a personal-use prototype assembled by a hobbyist, deployed on the hobbyist's own circuit, against the hobbyist's own appliances.</div>
+      </li>
+      <li>
+        <div class="head">Not perfectly silent</div>
+        <div class="body">The AS3935 is broadband and slightly opinionated. False positives happen — switching power supplies, motor brushes, defective fluorescent ballasts. Tuning is iterative. Expect to fiddle with the noise floor in the first week.</div>
+      </li>
+      <li>
+        <div class="head">Not a product</div>
+        <div class="body">There is no roadmap, no support, no SKU. There is one of these in the world. There may eventually be two. There will not be a fleet.</div>
+      </li>
+      <li>
+        <div class="head">Not whimsy</div>
+        <div class="body">The name is a joke. The wiring is not. The contactor will, if asked, sever 9.2 kilowatts of household load in roughly the time it takes to blink.</div>
+      </li>
+    </ul>
+  </section>
+
+
+  <!-- ============ PROVENANCE ============ -->
+  <section id="provenance">
+    <div class="section-head">
+      <span class="section-num">10 / Provenance</span>
+      <h2 class="section-title">Where this came from.</h2>
+      <span class="section-kicker">Unit 001</span>
+    </div>
+
+    <div class="cols prose">
+      <div>
+        <p>
+          jigawatt is the second machine in the
+          <a href="https://github.com/m-anish/starstucklab">starstuck lab</a>
+          ecosystem — small, self-contained instruments that solve one
+          specific problem in a domestic engineering context and then,
+          ideally, stop demanding attention.
+        </p>
+        <p>
+          The first one (unit 001) was assembled in May 2025, ahead of the
+          monsoon, in response to a series of unkind transients that did
+          unkind things to a refrigerator compressor and a fibre ONT.
+        </p>
+      </div>
+      <div>
+        <p>
+          The name is a homage to <em>Back to the Future</em>'s
+          "1.21 gigawatts," reliably mispronounced "jigawatts" by Doc Brown
+          and now reliably re-explained to bewildered listeners. Spelled
+          here without the <em>g</em>, said the same way, never corrected.
+        </p>
+        <p>
+          The next unit, if there is one, will get a custom PCB, a magnetic
+          loop antenna external to the enclosure, and a slightly less
+          opinionated firmware. No promises about timing.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="colophon">
+      <div>
+        <h4>Repository</h4>
+        <p style="margin:0;">
+          <a href="https://github.com/m-anish/jigawatt">github.com/m-anish/jigawatt</a><br>
+          Source, schematics, firmware, this page.
+        </p>
+      </div>
+      <div>
+        <h4>Family</h4>
+        <p style="margin:0;">
+          <a href="https://github.com/m-anish/starstucklab">starstuck lab</a><br>
+          Where science met poetry, had a brief fling with engineering,
+          and now raises mildly disillusioned but talented offspring.
+        </p>
+      </div>
+    </div>
+
+    <div class="signoff">
+      <span>⚡ jigawatt / unit 001 / made on purpose</span>
+      <span>Building small machines for an indifferent universe.</span>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

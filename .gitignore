@@ -1,0 +1,70 @@
+# --- OS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+desktop.ini
+
+# --- Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# --- PlatformIO / Arduino / ESP-IDF ---
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc-flags.json
+.cache/
+sdkconfig
+sdkconfig.old
+build/
+managed_components/
+
+# --- Compiled / artifacts ---
+*.o
+*.obj
+*.a
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.d
+
+# --- Python (build scripts, tools) ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# --- Node (in case docs ever grow a toolchain) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- KiCad / EDA backups ---
+*-bak/
+*.bak
+*-cache.lib
+*-rescue.lib
+fp-info-cache
+_autosave-*
+
+# --- Secrets / local config ---
+firmware/config.h
+firmware/secrets.h
+.env
+.env.local
+*.local
+
+# --- Logs ---
+*.log
