@@ -6,7 +6,7 @@
   <title>jigawatt — the first one, on purpose</title>
   <meta name="description" content="A small machine that listens for lightning and opens the mains contactor before the storm finishes its sentence. The first jigawatt, made on purpose. A starstucklab project." />
   <meta property="og:title" content="jigawatt" />
-  <meta property="og:description" content="A small machine that disagrees with lightning. The first one, on purpose." />
+  <meta property="og:description" content="A small machine that disagrees with lightning. Faster than the thunder." />
   <meta property="og:image" content="https://jigawatt.starstucklab.com/assets/hero.webp" />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#0b0b0d" />
@@ -28,7 +28,7 @@
     </a>
     <span class="status">
       <span class="dot"></span>
-      <span>Unit 001 · Brooding</span>
+      <span class="status-text">Unit 001 · Brooding</span>
     </span>
   </div>
 </header>
@@ -44,7 +44,7 @@
       <span>Monsoon, 2026</span>
     </div>
     <h1>jigawatt<span class="tail">.</span></h1>
-    <p class="hero-sub">The first one, on purpose.</p>
+    <p class="hero-sub">Faster than the thunder.</p>
     <p class="hero-tag">A small machine that disagrees with lightning.</p>
   </div>
   <div class="hero-scroll">scroll ↓</div>
@@ -282,7 +282,6 @@
   <path d="M 96 218 L 48 332"/>
   <path d="M 58 280 L 28 350"/>
 </svg>
-<div class="jw-badge" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 (function() {
@@ -302,54 +301,65 @@
 
   if (reduced) return;
 
-  // ---------- strike effect on first reveal of "the act" ----------
-  const act = document.getElementById('act');
-  if (!act) return;
+  // ---------- strike + restore: the page goes greyscale, then comes back ----------
+  const act     = document.getElementById('act');
+  const restore = document.querySelector('.feature');
+  const flash   = document.querySelector('.jw-flash');
+  const bolt    = document.querySelector('.jw-bolt');
+  const status  = document.querySelector('.status-text');
+  if (!act || !restore || !flash || !bolt || !status) return;
 
-  const flash = document.querySelector('.jw-flash');
-  const bolt  = document.querySelector('.jw-bolt');
-  const badge = document.querySelector('.jw-badge');
-  if (!flash || !bolt || !badge) return;
+  const BROODING = 'Unit 001 · Brooding';
+  const TRIPPED  = 'Unit 001 · Tripped · Island mode';
 
   let fired = false;
-  const obs = new IntersectionObserver(function(entries) {
+  const strikeObs = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
       if (e.isIntersecting && !fired) {
         fired = true;
         runStrike();
-        obs.disconnect();
+        strikeObs.disconnect();
       }
     });
   }, { threshold: 0.35 });
-  obs.observe(act);
+  strikeObs.observe(act);
+
+  // The restore observer arms itself only after the strike has fired;
+  // entering the unit feature returns the page to colour.
+  let restored = false;
+  const restoreObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && fired && !restored) {
+        restored = true;
+        runRestore();
+        restoreObs.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+  restoreObs.observe(restore);
 
   function runStrike() {
-    // t=0: flash + bolt + shake
+    // t=0: flash + bolt + shake fire; page begins desaturating
     document.body.classList.add('jw-shake');
+    document.body.classList.add('tripped');
     flash.classList.add('on');
     bolt.classList.add('on');
+    status.textContent = TRIPPED;
 
-    // t≈120ms: flash starts to clear; bolt holds a beat longer
+    // t≈130ms: flash clears
     setTimeout(function() { flash.classList.remove('on'); }, 130);
 
-    // t≈300ms: bolt fades, badge appears as TRIPPED
-    setTimeout(function() {
-      bolt.classList.remove('on');
-      badge.textContent = 'Tripped · island mode';
-      badge.classList.add('on', 'tripped');
-    }, 320);
+    // t≈320ms: bolt fades
+    setTimeout(function() { bolt.classList.remove('on'); }, 320);
 
-    // t≈420ms: stop shake
+    // t≈420ms: stop shake — the page is now grey, the topbar is the only colour
     setTimeout(function() { document.body.classList.remove('jw-shake'); }, 420);
+  }
 
-    // t≈1500ms: badge transitions to ARMED
-    setTimeout(function() {
-      badge.textContent = 'Armed';
-      badge.classList.remove('tripped');
-    }, 1500);
-
-    // t≈3200ms: fade badge away
-    setTimeout(function() { badge.classList.remove('on'); }, 3200);
+  function runRestore() {
+    // colour returns; status drops back to Brooding
+    document.body.classList.remove('tripped');
+    status.textContent = BROODING;
   }
 })();
 </script>
