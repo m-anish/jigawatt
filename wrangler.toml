@@ -1,0 +1,3 @@
+name = "jigawatt"
+compatibility_date = "2025-05-21"
+pages_build_output_dir = "docs"

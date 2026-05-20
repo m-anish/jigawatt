@@ -12,7 +12,7 @@
 
 A small box that listens for lightning and unhooks the house from the grid before the grid has an opinion about it. Built for the kind of monsoon that does not care what your surge protector claims on the back of the packaging.
 
-Part of the [starstuck lab](https://github.com/m-anish/starstucklab) ecosystem. The name is Doc Brown's, mispronounced on purpose.
+Part of the [starstucklab](https://github.com/m-anish/starstucklab) ecosystem. The name is Doc Brown's, mispronounced on purpose.
 
 ---
 
@@ -157,4 +157,4 @@ Brooding. Functional, deployed at one site, and quietly accumulating data throug
 
 ---
 
-<sub>A [starstuck lab](https://github.com/m-anish/starstucklab) project — building small machines for an indifferent universe.</sub>
+<sub>A [starstucklab](https://github.com/m-anish/starstucklab) project — building small machines for an indifferent universe.</sub>

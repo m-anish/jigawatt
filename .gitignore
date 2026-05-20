@@ -59,6 +59,10 @@ yarn-error.log*
 fp-info-cache
 _autosave-*
 
+# --- Cloudflare Wrangler cache (account + session) ---
+.wrangler/
+.dev.vars
+
 # --- Secrets / local config ---
 firmware/config.h
 firmware/secrets.h
