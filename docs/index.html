@@ -373,9 +373,14 @@
   }
 
   function runRestore() {
-    // colour returns; status drops back to Brooding
+    // colour returns with a brief brightness overshoot (lights coming back),
+    // then settles. Driven by a one-shot keyframe on body.restoring.
+    document.body.classList.add('restoring');
     document.body.classList.remove('tripped');
     status.textContent = BROODING;
+    setTimeout(function() {
+      document.body.classList.remove('restoring');
+    }, 1150);
   }
 })();
 </script>

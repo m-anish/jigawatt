@@ -532,7 +532,22 @@ section, footer {
 }
 body.tripped section,
 body.tripped footer {
-  filter: grayscale(1) brightness(0.86);
+  filter: grayscale(1) brightness(0.80);
+}
+
+/* Power restore: a one-shot keyframe that quickly returns colour,
+   briefly overshoots brightness (the "lights coming back" flash),
+   then settles. Transitions are suppressed so the keyframe wins. */
+body.restoring section,
+body.restoring footer {
+  animation: power-restore 1100ms ease-out forwards;
+  transition: none;
+}
+@keyframes power-restore {
+  0%   { filter: grayscale(1) brightness(0.80); }
+  45%  { filter: grayscale(0) brightness(1.15); }
+  70%  { filter: grayscale(0) brightness(1.04); }
+  100% { filter: grayscale(0) brightness(1.00); }
 }
 
 body.tripped .topbar .status-text {
@@ -547,6 +562,7 @@ body.tripped .topbar .status .dot {
   .jw-flash, .jw-bolt { display: none !important; }
   .jw-shake { animation: none !important; }
   section, footer { transition: none !important; }
+  body.restoring section, body.restoring footer { animation: none !important; }
   .timeline-track::before { transition: none !important; width: 100% !important; }
   .timeline-step .dot, .timeline-step .num, .step-icon { transition: none !important; }
   .icon-decide .ring, .icon-open line, .icon-wait .hand {
