@@ -175,6 +175,21 @@ h2.headline {
   align-items: flex-end;
   overflow: hidden;
 }
+
+/* Portrait/narrow viewports: swap in a vertical hero so the bolt
+   and the device's amber eyes stay in frame instead of being cropped
+   off the sides of the landscape image. */
+@media (max-width: 700px) {
+  .hero {
+    background-image:
+      linear-gradient(180deg,
+        rgba(11,11,13,0.55) 0%,
+        rgba(11,11,13,0.15) 35%,
+        rgba(11,11,13,0.55) 75%,
+        rgba(11,11,13,0.95) 100%),
+      url("assets/hero-mobile.webp");
+  }
+}
 .hero::after {
   content: "";
   position: absolute;

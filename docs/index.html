@@ -33,6 +33,11 @@
   </div>
 </header>
 
+<!-- .page wraps everything that should desaturate/shake — the topbar
+     stays outside so it remains truly viewport-fixed (avoids the
+     position:fixed-in-transformed-ancestor trap on mobile). -->
+<div class="page">
+
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="hero-inner">
@@ -288,6 +293,8 @@
   </div>
 </footer>
 
+</div><!-- /.page -->
+
 
 <!-- ============ STRIKE EFFECT OVERLAY ============ -->
 <div class="jw-flash" aria-hidden="true"></div>
@@ -321,7 +328,10 @@
   const flash   = document.querySelector('.jw-flash');
   const bolt    = document.querySelector('.jw-bolt');
   const status  = document.querySelector('.status-text');
-  if (!act || !restore || !flash || !bolt || !status) return;
+  // Shake the .page wrapper rather than <body> so the transform doesn't
+  // strand the fixed-position bolt/flash above the viewport on mobile.
+  const page    = document.querySelector('.page');
+  if (!act || !restore || !flash || !bolt || !status || !page) return;
 
   const BROODING = 'Unit 001 · Brooding';
   const TRIPPED  = 'Unit 001 · Tripped';
@@ -354,7 +364,7 @@
 
   function runStrike() {
     // t=0: flash + bolt + shake fire; page begins desaturating
-    document.body.classList.add('jw-shake');
+    page.classList.add('jw-shake');
     document.body.classList.add('tripped');
     flash.classList.add('on');
     bolt.classList.add('on');
@@ -367,7 +377,7 @@
     setTimeout(function() { bolt.classList.remove('on'); }, 320);
 
     // t≈420ms: stop shake — the page is now grey, the topbar is the only colour
-    setTimeout(function() { document.body.classList.remove('jw-shake'); }, 420);
+    setTimeout(function() { page.classList.remove('jw-shake'); }, 420);
   }
 
   function runRestore() {
