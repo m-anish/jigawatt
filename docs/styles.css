@@ -711,8 +711,8 @@ footer {
 }
 footer .cols {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 60px;
 }
 @media (max-width: 700px) {
   footer .cols { grid-template-columns: 1fr; }
