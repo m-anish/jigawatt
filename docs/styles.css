@@ -595,6 +595,30 @@ body.tripped .topbar .status .dot {
 }
 .provenance p + p { margin-top: 14px; }
 
+.cant-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 42ch;
+}
+.cant-list li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-2);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+.cant-list li:first-child { padding-top: 0; }
+.cant-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.cant-list li strong {
+  display: block;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
 /* ---------- footer ---------- */
 
 footer {
