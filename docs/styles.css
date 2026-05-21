@@ -380,6 +380,73 @@ section.text .kicker { margin-bottom: 14px; }
 .timeline-step:nth-child(3) .num { transition-delay: 1.00s; }
 .timeline-step:nth-child(4) .num { transition-delay: 1.45s; }
 
+/* per-step icons: color-match the dot, small motion on activation */
+.step-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin: 0 0 14px;
+  color: var(--text-mute);
+  transition: color 400ms ease;
+}
+.step-icon path,
+.step-icon circle:not([fill="none"]) {
+  fill: currentColor;
+}
+.step-icon circle[fill="none"],
+.step-icon line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.icon-decide .ring { fill: none; stroke: currentColor; stroke-width: 1; }
+
+.timeline.in-view .step-icon { color: var(--accent); }
+.timeline-step:nth-child(1) .step-icon { transition-delay: 0.10s; }
+.timeline-step:nth-child(2) .step-icon { transition-delay: 0.55s; }
+.timeline-step:nth-child(3) .step-icon { transition-delay: 1.00s; }
+.timeline-step:nth-child(4) .step-icon { transition-delay: 1.45s; }
+
+/* DECIDE — pulse rings outward */
+.icon-decide .ring {
+  transform-origin: 12px 12px;
+  opacity: 0;
+}
+.timeline.in-view .icon-decide .ring:nth-of-type(2) {
+  animation: pulse-ring 2.2s ease-out 0.65s infinite;
+}
+.timeline.in-view .icon-decide .ring:nth-of-type(3) {
+  animation: pulse-ring 2.2s ease-out 1.30s infinite;
+}
+@keyframes pulse-ring {
+  0%   { opacity: 0;   transform: scale(0.4); }
+  25%  { opacity: 0.7; }
+  100% { opacity: 0;   transform: scale(1.2); }
+}
+
+/* OPEN — two contacts slide apart */
+.icon-open line {
+  transform-origin: 12px 12px;
+  transition: transform 700ms cubic-bezier(.36,.07,.19,.97) 1.00s;
+}
+.icon-open line:nth-of-type(1) { transform: translateX(2px); }
+.icon-open line:nth-of-type(2) { transform: translateX(-2px); }
+.timeline.in-view .icon-open line:nth-of-type(1) { transform: translateX(0); }
+.timeline.in-view .icon-open line:nth-of-type(2) { transform: translateX(0); }
+
+/* WAIT — clock hand sweeps once */
+.icon-wait .hand {
+  transform-origin: 12px 12px;
+}
+.timeline.in-view .icon-wait .hand {
+  animation: clock-sweep 3.2s linear 1.45s;
+}
+@keyframes clock-sweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 .timeline-step h3 {
   font-size: 22px;
   letter-spacing: -0.02em;
@@ -481,7 +548,12 @@ body.tripped .topbar .status .dot {
   .jw-shake { animation: none !important; }
   section, footer { transition: none !important; }
   .timeline-track::before { transition: none !important; width: 100% !important; }
-  .timeline-step .dot, .timeline-step .num { transition: none !important; }
+  .timeline-step .dot, .timeline-step .num, .step-icon { transition: none !important; }
+  .icon-decide .ring, .icon-open line, .icon-wait .hand {
+    animation: none !important;
+    transition: none !important;
+  }
+  .icon-decide .ring { opacity: 1; }
 }
 
 /* ---------- unit feature (product shot) ---------- */

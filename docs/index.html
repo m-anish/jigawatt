@@ -102,24 +102,40 @@
         <li class="timeline-step">
           <span class="num">01</span>
           <span class="dot" aria-hidden="true"></span>
+          <svg class="step-icon icon-strike" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14 2 L6 13 L11 13 L9 22 L18 10 L13 10 Z"/>
+          </svg>
           <h3>Strike</h3>
           <p>A discharge somewhere inside ten kilometres. The sensor sees it before the thunder does.</p>
         </li>
         <li class="timeline-step">
           <span class="num">02</span>
           <span class="dot" aria-hidden="true"></span>
+          <svg class="step-icon icon-decide" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="2.5"/>
+            <circle class="ring" cx="12" cy="12" r="6"/>
+            <circle class="ring" cx="12" cy="12" r="10"/>
+          </svg>
           <h3>Decide</h3>
           <p>Classified, distance estimated, threshold cleared. The controller agrees with itself.</p>
         </li>
         <li class="timeline-step">
           <span class="num">03</span>
           <span class="dot" aria-hidden="true"></span>
+          <svg class="step-icon icon-open" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="2"  y1="12" x2="10" y2="12"/>
+            <line x1="14" y1="12" x2="22" y2="12"/>
+          </svg>
           <h3>Open</h3>
           <p>AC Mains power is physically disconnected. The house becomes an island.</p>
         </li>
         <li class="timeline-step">
           <span class="num">04</span>
           <span class="dot" aria-hidden="true"></span>
+          <svg class="step-icon icon-wait" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="none"/>
+            <line class="hand" x1="12" y1="12" x2="12" y2="6"/>
+          </svg>
           <h3>Wait &amp; Verify</h3>
           <p>Five-minute cool-off, check for any new lightning flashes. Re-join the power grid if safe.</p>
         </li>
@@ -300,7 +316,7 @@
         tlObs.unobserve(e.target);
       }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.5 });
   document.querySelectorAll('.timeline').forEach(function(el) { tlObs.observe(el); });
 
   if (reduced) return;
@@ -339,7 +355,7 @@
         restoreObs.disconnect();
       }
     });
-  }, { threshold: 0.4 });
+  }, { threshold: 0.6 });
   restoreObs.observe(restore);
 
   function runStrike() {
