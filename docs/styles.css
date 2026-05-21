@@ -43,6 +43,16 @@ a {
 }
 a:hover { border-color: var(--accent); }
 
+/* Heading anchors: the amber colour identifies the link.
+   An underline at heading size competes with the weight. */
+h1 a, h2 a, h3 a {
+  border-bottom: none;
+}
+h1 a:hover, h2 a:hover, h3 a:hover {
+  border-bottom: none;
+  opacity: 0.8;
+}
+
 ::selection { background: var(--accent); color: #0b0b0d; }
 
 /* ---------- layout ---------- */
@@ -84,7 +94,7 @@ h2.headline {
   font-weight: 600;
   margin: 0 0 28px;
   line-height: 1.04;
-  max-width: 18ch;
+  max-width: 22ch;
 }
 
 /* ---------- top bar ---------- */
@@ -198,7 +208,7 @@ h2.headline {
 .hero h1 {
   font-size: clamp(72px, 14vw, 200px);
   line-height: 0.9;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.045em;
   margin: 0 0 22px;
   font-weight: 600;
   color: var(--text);
@@ -602,10 +612,10 @@ body.tripped .topbar .status .dot {
   max-width: 42ch;
 }
 .cant-list li {
-  padding: 16px 0;
+  padding: 22px 0;
   border-bottom: 1px solid var(--border-2);
   font-size: 16px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: var(--text-dim);
 }
 .cant-list li:first-child { padding-top: 0; }
