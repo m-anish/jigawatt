@@ -14,6 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/kit/tokens.css" />
+  <link rel="stylesheet" href="assets/kit/base.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/svg+xml" href="assets/mark.svg" />
 </head>
@@ -249,18 +251,11 @@
           </li>
         </ul>
       </div>
-      <div>
-        <span class="kicker">Family</span>
-        <h2>Part of <a href="https://starstucklab.com">starstucklab</a>.</h2>
-        <p>
-          A small ecosystem of personal engineering instruments, each built to
-          solve one specific problem and then, ideally, stop demanding
-          attention.
-        </p>
-        <p>
-          Where science met poetry, had a brief fling with engineering, and now
-          raises mildly disillusioned but talented offspring.
-        </p>
+      <div class="sl-family">
+        <span class="sl-kicker">Family</span>
+        <h2>Part of <a class="sl-link" href="https://starstucklab.com">starstucklab</a>.</h2>
+        <p>A small ecosystem of personal engineering instruments, each built to solve one specific problem and then, ideally, stop demanding attention.</p>
+        <p>Where science met poetry, had a brief fling with engineering, and now raises mildly disillusioned but talented offspring.</p>
       </div>
     </div>
   </div>
@@ -268,25 +263,19 @@
 
 
 <!-- ============ FOOTER ============ -->
-<footer>
-  <div class="wrap">
-    <div class="cols">
+<footer class="sl-footer">
+  <div class="sl-wrap">
+    <div class="sl-footer-cols">
       <div>
         <h4>The build</h4>
-        <p>
-          Schematics, firmware, BOM, wiring:<br>
-          <a href="https://github.com/m-anish/jigawatt">github.com/m-anish/jigawatt&nbsp;↗</a>
-        </p>
+        <p>Schematics, firmware, BOM, wiring:<br><a href="https://github.com/m-anish/jigawatt">github&nbsp;↗</a></p>
       </div>
       <div>
         <h4>The family</h4>
-        <p>
-          <a href="https://github.com/m-anish/starstucklab">starstucklab&nbsp;↗</a><br>
-          Other small machines.
-        </p>
+        <p><a href="https://github.com/m-anish/starstucklab">starstucklab&nbsp;↗</a><br>Other small machines.</p>
       </div>
     </div>
-    <div class="signoff">
+    <div class="sl-signoff">
       <span>⚡ Jigawatt / Unit 001 / Made on purpose</span>
       <span>Building small machines for an indifferent universe.</span>
     </div>

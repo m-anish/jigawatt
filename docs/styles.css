@@ -1,3 +1,19 @@
+/* Starstuck Lab kit — jigawatt theme overrides */
+:root {
+  --sl-bg:        #0b0b0d;
+  --sl-surface:   #131316;
+  --sl-border:    #1c1c1f;
+  --sl-text:      #e8e6e1;
+  --sl-text-dim:  #8a8780;
+  --sl-text-mute: #5a5854;
+  --sl-accent:    #ffb000;
+  --sl-accent-2:  #6ec1e4;
+  --sl-font-display: 'Inter', system-ui, sans-serif;
+  --sl-font-body:    'Inter', system-ui, sans-serif;
+  --sl-font-mono:    'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --sl-maxw:      1180px;
+}
+
 /* ============================================================
    jigawatt / unit 001
    marketing site — lab notebook meets high-voltage signage
