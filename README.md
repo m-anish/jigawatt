@@ -34,13 +34,13 @@ It does not pretend to be lightning protection. It is a fast, dumb switch with a
 
 Three diagrams, in increasing order of "this is where the wires actually go."
 
-![System overview](docs/reference/diag_overview.png)
+![System overview](site/reference/diag_overview.png)
 *System overview — sensor, controller, MQTT, and the contactor in their natural habitat.*
 
-![DIY control board](docs/reference/diag_diy3.png)
+![DIY control board](site/reference/diag_diy3.png)
 *Control board — ESP32, AS3935 on SPI, PC817 optocoupler isolating an ESP32 GPIO from a BD139 that drives the contactor coil.*
 
-![Mains side](docs/reference/diag_mains2.png)
+![Mains side](site/reference/diag_mains2.png)
 *Mains side — 4-pole 40A AC contactor between the incoming supply and the household distribution board, with the UPS feeding the low-voltage side independently.*
 
 > The public site is at **[jigawatt.starstucklab.com](https://jigawatt.starstucklab.com)** — it's the marketing version, treating unit 001 like a launch. This README is the engineering version.
@@ -147,7 +147,7 @@ It subscribes to:
 
 MQTT discovery is enabled. Once the broker is configured and the device is online, a `jigawatt` device appears in **Settings → Devices & Services → MQTT** with sensors for state, last strike distance, strike count, contactor position, battery voltage, and signal strength, plus buttons for arm, test, and reboot.
 
-A reference Lovelace card and a sample automation (notify on first strike within 20 km, log every trip) are in `docs/home_assistant/`.
+A reference Lovelace card and a sample automation (notify on first strike within 20 km, log every trip) are in `site/home_assistant/`.
 
 ---
 
