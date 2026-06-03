@@ -552,33 +552,26 @@ section.text .kicker { margin-bottom: 14px; }
   90%  { transform: translate(-1px, 0); }
   100% { transform: translate(0, 0); }
 }
-.jw-shake { animation: jw-shake 420ms cubic-bezier(.36,.07,.19,.97) both; }
+.jw-shake { animation: jw-shake 420ms cubic-bezier(.36,.07,.19,.97) both; will-change: transform; }
 
 /* ---------- tripped state: page desaturates, topbar stays in colour ----------
    The topbar (<header>) is excluded from the filter, so its amber dot + status
    text remain the only source of colour while the page is "tripped". */
 
-section, footer {
-  transition: filter 900ms ease;
-}
-body.tripped section,
-body.tripped footer {
+/* The strike snaps the world to grey *instantly* (no filter transition —
+   animating a page-wide filter forces Blink to re-rasterise the page every
+   frame, which WebKit/Safari avoid; that was the original jank).
+   Two refinements to kill the *residual* stutter at the strike instant:
+   1. Filter the whole .page as ONE surface, not each <section> separately —
+      one filter raster instead of ~9, so the toggle costs a single frame.
+      (.topbar lives outside .page, so it stays in colour as before.)
+   2. JS applies .tripped one frame late, while the white flash is at peak,
+      so that single heavy repaint happens *behind the flash* and is unseen.
+   will-change keeps the static grayscale raster cached as a layer, so the
+   shake (and any scrolling while grey) composites instead of re-rastering. */
+body.tripped .page {
   filter: grayscale(1) brightness(0.80);
-}
-
-/* Power restore: a one-shot keyframe that quickly returns colour,
-   briefly overshoots brightness (the "lights coming back" flash),
-   then settles. Transitions are suppressed so the keyframe wins. */
-body.restoring section,
-body.restoring footer {
-  animation: power-restore 1100ms ease-out forwards;
-  transition: none;
-}
-@keyframes power-restore {
-  0%   { filter: grayscale(1) brightness(0.80); }
-  45%  { filter: grayscale(0) brightness(1.15); }
-  70%  { filter: grayscale(0) brightness(1.04); }
-  100% { filter: grayscale(0) brightness(1.00); }
+  will-change: transform;
 }
 
 body.tripped .topbar .status-text {

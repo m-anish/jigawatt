@@ -357,14 +357,24 @@
   restoreObs.observe(restore);
 
   function runStrike() {
-    // t=0: flash + bolt + shake fire; page begins desaturating
-    page.classList.add('jw-shake');
-    document.body.classList.add('tripped');
+    // t=0: the cheap, dramatic layer fires first — white flash + bolt + shake.
+    // These are compositor-only (opacity / transform), so they paint instantly.
     flash.classList.add('on');
     bolt.classList.add('on');
+    page.classList.add('jw-shake');
     status.textContent = TRIPPED;
 
-    // t≈130ms: flash clears
+    // Desaturate one frame later, while the flash is at peak white: the single
+    // heavy grayscale repaint of the whole page then happens *behind* the flash
+    // and is revealed only as the flash fades — so the strike reads as a clean
+    // flash, not a stutter.
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        document.body.classList.add('tripped');
+      });
+    });
+
+    // t≈130ms: flash clears (its 90ms fade-out reveals the now-grey page)
     setTimeout(function() { flash.classList.remove('on'); }, 130);
 
     // t≈320ms: bolt fades
@@ -375,14 +385,15 @@
   }
 
   function runRestore() {
-    // colour returns with a brief brightness overshoot (lights coming back),
-    // then settles. Driven by a one-shot keyframe on body.restoring.
-    document.body.classList.add('restoring');
+    // Colour returns instantly: removing .tripped drops the page-wide grayscale
+    // filter in a single repaint instead of animating it across every section
+    // (animating a full-page filter is what made this janky in Chrome/Brave on
+    // the Mac). The brief power-on flash below is opacity-only — GPU-composited
+    // — so it sells the "lights coming back" overshoot with no per-frame cost.
     document.body.classList.remove('tripped');
     status.textContent = BROODING;
-    setTimeout(function() {
-      document.body.classList.remove('restoring');
-    }, 1150);
+    flash.classList.add('on');
+    setTimeout(function() { flash.classList.remove('on'); }, 140);
   }
 })();
 </script>
